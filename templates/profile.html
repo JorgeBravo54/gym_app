@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+</head>
+<body>
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-info">
+        <span class="username">@{{ username }}</span>
+      </div>
+      <div class="header-actions">
+        <form action="/logout" method="POST">
+          <input type="submit" class="logout-btn" value="Log out">
+        </form>
+        <form action="/commentSection" method="POST">
+          <input type="submit" class="comment-btn" value="Comment Section">
+        </form>
+      </div>
+    </div>
+
+    <hr>
+
+    <h2 class="section-title">My Training</h2>
+    <button class="routine-btn" onclick="createRoutineBox()">New Routine</button>
+
+    <!-- Dynamic container-->
+     <div id="routine-container"></div>
+  </div>
+<script src="{{ url_for('static', filename='profile.js') }}"></script>
+</body>
+
+</html>
+
