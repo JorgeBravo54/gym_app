@@ -11,12 +11,19 @@ async function createComment(text) {
 
 // Update by id
 async function updateComment(id, text) {
-  await fetch(`/comments/${id}`, {
+  const res = await fetch(`/comments/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ comment: text })
   });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Update failed (${res.status}): ${err}`);
+  }
+  return res.json();
 }
+
 
 // Delete by id
 async function deleteComment(id) {
@@ -51,47 +58,67 @@ function renderCommentBox({ id, username, comment, canEdit }) {
     const cancelBtn = box.querySelector(".cancel-btn");
 
     deleteBtn.addEventListener("click", async () => {
-      const id = box.querySelector(".comment-body").dataset.commentId;
-      await deleteComment(id);
+      const bodyEl = box.querySelector(".comment-body");
+      const commentId = bodyEl?.dataset.commentId;
+      if (!commentId) return;
+      await deleteComment(commentId);
       container.removeChild(box);
     });
 
     editBtn.addEventListener("click", async () => {
-      const body = box.querySelector(".comment-body");
+      const bodyEl = box.querySelector(".comment-body");
 
       if (editBtn.textContent === "Edit") {
+        // Create textarea and copy datasets
         const textarea = document.createElement("textarea");
-        textarea.value = body.textContent;
+        textarea.value = bodyEl.textContent;
         textarea.className = "edit-textarea";
-        box.replaceChild(textarea, body);
+        textarea.dataset.commentId = bodyEl.dataset.commentId;
+        textarea.dataset.username = bodyEl.dataset.username;
 
+        box.replaceChild(textarea, bodyEl);
+
+        deleteBtn.style.display = "none";
         editBtn.textContent = "Save";
         cancelBtn.style.display = "inline-block";
 
         cancelBtn.onclick = () => {
-          box.replaceChild(body, textarea);
+          // Restore original body
+          box.replaceChild(bodyEl, textarea);
           editBtn.textContent = "Edit";
           cancelBtn.style.display = "none";
+          deleteBtn.style.display = "inline-block";
         };
       } else {
+        // Save branch
         const textarea = box.querySelector(".edit-textarea");
-        const newText = textarea.value.trim();
-        const id = body.dataset.commentId;
+        if (!textarea) return;
 
+        const newText = textarea.value.trim();
+        const commentId = textarea.dataset.commentId;
+        const uname = textarea.dataset.username;
+
+        // Recreate body with saved datasets
         const newBody = document.createElement("div");
         newBody.className = "comment-body";
-        newBody.dataset.commentId = id;
-        newBody.dataset.username = body.dataset.username;
+        newBody.dataset.commentId = commentId;
+        newBody.dataset.username = uname;
         newBody.textContent = newText;
 
         box.replaceChild(newBody, textarea);
         editBtn.textContent = "Edit";
         cancelBtn.style.display = "none";
+        deleteBtn.style.display = "inline-block";
 
         const editedTime = new Date().toLocaleString();
         box.querySelector(".timestamp").textContent = `Edited at ${editedTime}`;
 
-        await updateComment(id, newText);
+        try {
+          await updateComment(commentId, newText);
+        } catch (e) {
+          console.error(e);
+          alert("Failed to save comment. Please try again.");
+        }
       }
     });
   }
@@ -99,6 +126,7 @@ function renderCommentBox({ id, username, comment, canEdit }) {
   container.appendChild(box);
   return box;
 }
+
 
 // Create from input (keeps your UI flow)
 async function createCommentBox() {
