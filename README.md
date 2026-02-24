@@ -19,7 +19,7 @@ This project demonstrates a CRUD workflow with a Flask backend.
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 - **Backend:** Flask (Python)
 - **Frontend:** HTML, CSS, JavaScript
 - **Database:** (SQLite)
@@ -28,17 +28,4 @@ This project demonstrates a CRUD workflow with a Flask backend.
   - bcrypt  
   - requests  
   - gunicorn
-
----
----
-
-## ⚙️ Installation & Setup
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/JorgeBravo54/gym_app.git
-cd gym_app
-pip install -r requirements.txt
-flask run
-
 
