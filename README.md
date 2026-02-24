@@ -13,7 +13,7 @@ This project demonstrates a CRUD workflow with a Flask backend.
 
 ## Features
 - User authentication via session
-- RESTful API endpoints for comments (`GET`, `POST`, `PUT`, `DELETE`)
+- RESTful API endpoints for comments (GET, POST, PUT, DELETE)
 - Frontend rendering with dynamic comment boxes
 - Edit/Save/Cancel functionality for comments
 
